@@ -1,1 +1,19 @@
-
+spring:
+  datasource:
+    url: jdbc:h2:mem:swichkitdb
+    driver-class-name: org.h2.Driver
+    username: swchuser
+    password: 12345qwert
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+  security:
+    basic:
+      enabled: true
+      authorize-mode: NONE
