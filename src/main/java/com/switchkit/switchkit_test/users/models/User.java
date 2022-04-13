@@ -3,9 +3,12 @@ package com.switchkit.switchkit_test.users.models;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Set;
 
 @Getter
@@ -22,6 +25,13 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
     private String password;
+    @Column(name = "account_non_locked")
+    private boolean isAccountNonLocked = true;
+
+    @CreationTimestamp
+    private Instant createdAt;
+    @UpdateTimestamp
+    private Instant updatedAt;
 
     @ManyToMany
     @JoinTable(
@@ -36,13 +46,13 @@ public class User implements UserDetails {
         this.authorities = roles;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public User(String username, Set<Role> roles) {
+        this.username = username;
+        this.authorities = roles;
     }
 
     @Override
-    public boolean isAccountNonLocked() {
+    public boolean isAccountNonExpired() {
         return true;
     }
 
