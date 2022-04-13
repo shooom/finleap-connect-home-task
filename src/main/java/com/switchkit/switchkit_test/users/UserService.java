@@ -30,6 +30,12 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    public User findUser(Long id) {
+        return repository.findById(id).orElseThrow(() -> {
+            throw new RuntimeException("User not found");
+        });
+    }
+
     public List<User> getAllUsers() {
         return repository.findAll();
     }
