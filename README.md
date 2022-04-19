@@ -48,5 +48,207 @@ curl --request POST \
 	"password": "admin"
 }'
 ```
+**Result**
+```json
+{
+	"username": "admin",
+	"token": "{jwt_token}"
+}
+```
+You need to use _token_ value for all other requests to the app.
 
+There are 2 main parts of this app:
+1. Users
+2. Reports
 
+#### Users
+##### Add new user
+```shell
+curl --request POST \
+  --url http://localhost:8080/users \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9 \
+  --data '{
+	"username": "user_5",
+	"password": "ps123",
+	"roles": ["USER"]
+}'
+```
+**Result**
+```json
+{
+  "id": 4,
+  "username": "user_5",
+  "authorities": [
+    {
+      "authority": "USER"
+    }
+  ]
+}
+``` 
+
+##### Get all users
+```shell
+curl --request GET \
+  --url http://localhost:8080/users \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9
+```
+**Result**
+```json
+[
+  {
+    "id": 3,
+    "username": "admin",
+    "authorities": [
+      {
+        "authority": "USER"
+      },
+      {
+        "authority": "ADMIN"
+      }
+    ]
+  }
+]
+``` 
+
+##### Update user
+```shell
+curl --request PUT \
+  --url http://localhost:8080/users/1 \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9 \
+  --data '{
+	"username": "user_new_user",
+	"password": "ps123",
+	"roles": ["ADMIN", "USER"]
+}'
+```
+**Result**
+```json
+{
+  "id": 4,
+  "username": "user_new_user123",
+  "authorities": [
+    {
+      "authority": "USER"
+    }
+  ]
+}
+``` 
+
+##### Delete user
+```shell
+curl --request DELETE \
+  --url http://localhost:8080/users/1 \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9
+``` 
+
+#### Reports
+##### Add new report
+```shell
+curl --request POST \
+  --url http://localhost:8080/reports \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9 \
+  --data '{
+	"title": "Third report",
+	"assigneeId": 4
+}'
+```
+**Result**
+```json
+{
+  "id": 5,
+  "createdAt": "2022-04-19T21:14:20.966474Z",
+  "updatedAt": "2022-04-19T21:14:20.966479Z",
+  "assignee": {
+    "id": 4,
+    "username": "user_5"
+  },
+  "title": "Third report",
+  "author": {
+    "id": 3,
+    "username": "admin"
+  },
+  "status": "ASSIGNED"
+}
+``` 
+
+##### Add new report
+```shell
+curl --request POST \
+  --url http://localhost:8080/reports \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --header 'Content-Type: application/json' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9 \
+  --data '{
+	"title": "Third report",
+	"assigneeId": 4
+}'
+```
+**Result**
+```json
+{
+  "id": 5,
+  "createdAt": "2022-04-19T21:14:20.966474Z",
+  "updatedAt": "2022-04-19T21:14:20.966479Z",
+  "assignee": {
+    "id": 4,
+    "username": "user_5"
+  },
+  "title": "Third report",
+  "author": {
+    "id": 3,
+    "username": "admin"
+  },
+  "status": "ASSIGNED"
+}
+``` 
+
+##### Get list of reports
+```shell
+curl --request GET \
+  --url http://localhost:8080/reports \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9
+```
+**Result**
+```json
+[
+  {
+    "id": 5,
+    "status": "ASSIGNED",
+    "title": "Third report",
+    "author": {
+      "id": 3,
+      "username": "admin"
+    },
+    "assignee": {
+      "id": 4,
+      "username": "user_new_user123"
+    },
+    "createdAt": "2022-04-19T22:22:21.692931Z",
+    "updatedAt": "2022-04-19T22:22:21.692941Z"
+  }
+]
+``` 
+
+##### Change status of report (**close report**)
+```shell
+curl --request GET \
+  --url http://localhost:8080/reports/5/close \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9
+```
+
+##### Delete report
+```shell
+curl --request DELETE \
+  --url http://localhost:8080/reports/4 \
+  --header 'Authorization: Bearer_{jwt_token}' \
+  --cookie JSESSIONID=676AB374C9CECBDE392481C4C99948E9
+```
