@@ -31,18 +31,17 @@ public class UserService {
         return repository.findUserByUsername(username);
     }
 
-    public List<UserDto> getAllUsers() {
-        return repository.findAll().stream()
-                .map(this::createDto).collect(Collectors.toList());
+    public List<User> getAllUsers() {
+        return repository.findAll();
     }
 
-    public UserDto createUser(String username, String password, String[] roles) {
+    public User createUser(String username, String password, String[] roles) {
         var user = new User(
                 username,
                 passwordEncoder.encode(password),
                 roleRepository.findAllByAuthorityIn(roles));
         var newUser = repository.save(user);
-        return createDto(newUser);
+        return newUser;
     }
 
     public UserDto updateUser(Long id, UserCreateDto dto) {

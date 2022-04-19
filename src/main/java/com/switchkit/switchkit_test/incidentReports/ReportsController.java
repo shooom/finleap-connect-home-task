@@ -2,11 +2,13 @@ package com.switchkit.switchkit_test.incidentReports;
 
 import com.switchkit.switchkit_test.incidentReports.dto.ReportDto;
 import com.switchkit.switchkit_test.incidentReports.dto.ReportUpdateDto;
+import com.switchkit.switchkit_test.utils.ProjectionsConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reports")
@@ -14,22 +16,27 @@ import java.util.List;
 public class ReportsController {
 
     private final ReportsService service;
+    private final ProjectionsConverter converter;
 
     @PostMapping
-    public ResponseEntity<Report> createReport(@RequestBody ReportDto dto) {
+    public ResponseEntity<ReportProjection> createReport(@RequestBody ReportDto dto) {
         var newReport = service.createReport(dto);
-        return ResponseEntity.ok(newReport);
+        return ResponseEntity.ok(converter.getProjection(ReportProjection.class, newReport));
     }
 
     @GetMapping
-    public ResponseEntity<List<Report>> getReports() {
-        return ResponseEntity.ok(service.getReports());
+    public ResponseEntity<List<ReportProjection>> getReports() {
+        var reports = service.getReports();
+
+        return ResponseEntity.ok(reports.stream()
+                .map(report -> converter.getProjection(ReportProjection.class, report))
+                .collect(Collectors.toList()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Report> updateReport(@PathVariable Long id, @RequestBody ReportUpdateDto dto) {
+    public ResponseEntity<ReportProjection> updateReport(@PathVariable Long id, @RequestBody ReportUpdateDto dto) {
         var updatedReport = service.updateReport(id, dto);
-        return ResponseEntity.ok(updatedReport);
+        return ResponseEntity.ok(converter.getProjection(ReportProjection.class, updatedReport));
     }
 
     @GetMapping("/{id}/close")
