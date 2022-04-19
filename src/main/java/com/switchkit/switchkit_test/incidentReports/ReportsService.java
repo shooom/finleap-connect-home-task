@@ -1,5 +1,6 @@
 package com.switchkit.switchkit_test.incidentReports;
 
+import com.switchkit.switchkit_test.exceptions.ReportRestrictionsException;
 import com.switchkit.switchkit_test.incidentReports.dto.ReportDto;
 import com.switchkit.switchkit_test.incidentReports.dto.ReportUpdateDto;
 import com.switchkit.switchkit_test.security.jwt.JwtUser;
@@ -38,7 +39,7 @@ public class ReportsService {
 
         if (userFromJwt.getId() != report.getAuthor().getId()) {
             if (report.getAssignee() != null && userFromJwt.getId() != report.getAssignee().getId()) {
-                throw new RuntimeException("Only Author or Assignee can change the report");
+                throw new ReportRestrictionsException("Only Author or Assignee can change the report");
             }
         }
         report.setTitle(dto.getTitle());
@@ -51,7 +52,7 @@ public class ReportsService {
         var userFromJwt = getUserFromJwt();
 
         if(userFromJwt.getId() != report.getAssignee().getId()) {
-            throw new RuntimeException("Only Assignee can change status of the report");
+            throw new ReportRestrictionsException("Only Assignee can change status of the report");
         }
         report.setStatus(Status.CLOSED);
         repository.save(report);
@@ -61,7 +62,7 @@ public class ReportsService {
         var report = repository.getById(id);
 
         if (report.getStatus().equals(Status.ASSIGNED)) {
-            throw new RuntimeException("Can't delete report in status [ASSIGNED]");
+            throw new ReportRestrictionsException("Can't delete report in status [ASSIGNED]");
         }
         repository.delete(report);
     }
@@ -71,7 +72,7 @@ public class ReportsService {
         if (assignee.isAccountNonLocked() && isAssigneeNotHaveActiveReports(id)) {
             return assignee;
         } else {
-            throw new RuntimeException("Can't to join this user as Assignee");
+            throw new ReportRestrictionsException("Can't to join this user as Assignee");
         }
     }
 

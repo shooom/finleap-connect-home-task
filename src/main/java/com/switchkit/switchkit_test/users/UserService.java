@@ -1,7 +1,6 @@
 package com.switchkit.switchkit_test.users;
 
 import com.switchkit.switchkit_test.users.dto.UserCreateDto;
-import com.switchkit.switchkit_test.users.dto.UserDto;
 import com.switchkit.switchkit_test.users.models.User;
 import com.switchkit.switchkit_test.users.repository.RoleRepository;
 import com.switchkit.switchkit_test.users.repository.UserRepository;
@@ -11,7 +10,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +20,11 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public User findUser(Long id) {
-        return repository.findById(id).orElseThrow(() -> {
-            throw new RuntimeException("User not found");
-        });
+        return repository
+                .findById(id)
+                .orElseThrow(() -> {
+                    throw new UsernameNotFoundException("User not found");
+                });
     }
 
     public User findUserByName(String username) {
@@ -44,20 +44,19 @@ public class UserService {
         return newUser;
     }
 
-    public UserDto updateUser(Long id, UserCreateDto dto) {
+    public User updateUser(Long id, UserCreateDto dto) {
         var updatedUser = repository.findById(id)
                 .map(user -> {
                     user.setUsername(dto.getUsername());
                     user.setAuthorities(roleRepository.findAllByAuthorityIn(dto.getRoles()));
                     return repository.save(user);
                 })
-                .orElseGet(() -> {
-                    return repository.save(new User(
+                .orElseGet(() -> repository.save(
+                        new User(
                             dto.getUsername(),
                             roleRepository.findAllByAuthorityIn(dto.getRoles()))
-                    );
-                });
-        return createDto(updatedUser);
+                ));
+        return updatedUser;
     }
 
     public void deleteUser(Long id) {
@@ -69,14 +68,5 @@ public class UserService {
                 .orElseThrow(() -> {
                     throw new UsernameNotFoundException("User not found");
                 });
-    }
-
-    private UserDto createDto(User user) {
-        return new UserDto(
-                user.getId(),
-                user.getUsername(),
-                user.getAuthorities()
-                        .stream().map(role -> role.getAuthority())
-                        .toArray(String[]::new));
     }
 }
