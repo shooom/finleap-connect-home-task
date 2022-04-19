@@ -4,36 +4,28 @@ import com.switchkit.switchkit_test.users.models.User;
 import com.switchkit.switchkit_test.users.repository.RoleRepository;
 import com.switchkit.switchkit_test.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService {
 
     private final UserRepository repository;
     private final RoleRepository roleRepository;
-    private final PasswordEncoder passCoder = new BCryptPasswordEncoder();
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = repository.findUserByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-        return user;
-    }
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public User findUser(Long id) {
         return repository.findById(id).orElseThrow(() -> {
             throw new RuntimeException("User not found");
         });
+    }
+
+    public User findUserByName(String username) {
+        return repository.findUserByUsername(username);
     }
 
     public List<User> getAllUsers() {
@@ -43,14 +35,14 @@ public class UserService implements UserDetailsService {
     public User createUser(String username, String password, String[] roles) {
         var user = new User(
                 username,
-                passCoder.encode(password),
+                passwordEncoder.encode(password),
                 roleRepository.findAllByAuthorityIn(roles));
         return repository.save(user);
     }
 
     public User updateUser(Long id, UserCreateDto dto) {
         return repository.findById(id)
-                        .map(user ->{
+                        .map(user -> {
                             user.setUsername(dto.getUsername());
                             user.setAuthorities(roleRepository.findAllByAuthorityIn(dto.getRoles()));
                             return repository.save(user);

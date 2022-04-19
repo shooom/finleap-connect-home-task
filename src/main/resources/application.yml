@@ -17,3 +17,7 @@ spring:
     basic:
       enabled: true
       authorize-mode: NONE
+
+jwt:
+  secret: switchSecret
+  validity: 360000
