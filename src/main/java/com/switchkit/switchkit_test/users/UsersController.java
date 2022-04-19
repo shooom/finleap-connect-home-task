@@ -1,7 +1,7 @@
 package com.switchkit.switchkit_test.users;
 
-import com.switchkit.switchkit_test.users.models.User;
-import lombok.AllArgsConstructor;
+import com.switchkit.switchkit_test.users.dto.UserCreateDto;
+import com.switchkit.switchkit_test.users.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,19 +17,19 @@ public class UsersController {
     private final UserService service;
 
     @PostMapping
-    public ResponseEntity<User> addUser(@RequestBody UserCreateDto dto) {
+    public ResponseEntity<UserDto> addUser(@RequestBody UserCreateDto dto) {
         var newUser = service.createUser(
                 dto.getUsername(), dto.getPassword(), dto.getRoles());
         return ok(newUser);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody UserCreateDto dto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody UserCreateDto dto) {
         return ok(service.updateUser(id, dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<List<UserDto>> getUsers() {
         return ok(service.getAllUsers());
     }
 

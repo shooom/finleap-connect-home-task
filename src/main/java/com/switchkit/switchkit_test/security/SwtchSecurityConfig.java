@@ -24,6 +24,7 @@ public class SwtchSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final static String LOGIN_ENDPOINT = "/auth/login";
     private final static String USERS_ENDPOINT = "/users/**";
+    private final static String REPORTS_ENDPOINT = "/reports/**";
 
     private final JwtTokenProvider tokenProvider;
     private final UserService userService;
@@ -43,7 +44,8 @@ public class SwtchSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(LOGIN_ENDPOINT).permitAll()
-                .antMatchers(USERS_ENDPOINT).hasRole("ADMIN")
+                .antMatchers(USERS_ENDPOINT).hasAnyRole("ADMIN", "USER")
+                .antMatchers(REPORTS_ENDPOINT).hasAnyRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(tokenProvider));
@@ -51,10 +53,10 @@ public class SwtchSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @PostConstruct
     private void initAdmin() {
-        log.info("Create [ADMIN] user...");
+        log.info("Create [ADMIN, USER] user...");
         roleService.createRole("ADMIN");
         roleService.createRole("USER");
-        String[] roles = {"ADMIN"};
+        String[] roles = {"ADMIN", "USER"};
         userService.createUser("admin", "admin", roles);
         log.info("Done.");
     }

@@ -9,12 +9,14 @@ import java.util.Collection;
 @Data
 public class JwtUser implements UserDetails {
 
+    private long id;
     private String username;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
 
-    public JwtUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
+    public JwtUser(Long id, String username, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;

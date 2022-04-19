@@ -28,14 +28,12 @@ public class ReportsController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Report> updateReport(@PathVariable Long id, @RequestBody ReportUpdateDto dto) {
-        // TODO: check if principal is author of assignee
         var updatedReport = service.updateReport(id, dto);
         return ResponseEntity.ok(updatedReport);
     }
 
     @GetMapping("/{id}/close")
     public void updateStatus(@PathVariable Long id) {
-        // TODO: check if principal is assignee
         service.closeReport(id);
     }
 

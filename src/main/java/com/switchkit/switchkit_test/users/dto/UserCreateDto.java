@@ -1,4 +1,4 @@
-package com.switchkit.switchkit_test.users;
+package com.switchkit.switchkit_test.users.dto;
 
 import lombok.Data;
 

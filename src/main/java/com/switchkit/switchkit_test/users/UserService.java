@@ -1,5 +1,7 @@
 package com.switchkit.switchkit_test.users;
 
+import com.switchkit.switchkit_test.users.dto.UserCreateDto;
+import com.switchkit.switchkit_test.users.dto.UserDto;
 import com.switchkit.switchkit_test.users.models.User;
 import com.switchkit.switchkit_test.users.repository.RoleRepository;
 import com.switchkit.switchkit_test.users.repository.UserRepository;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,31 +31,34 @@ public class UserService {
         return repository.findUserByUsername(username);
     }
 
-    public List<User> getAllUsers() {
-        return repository.findAll();
+    public List<UserDto> getAllUsers() {
+        return repository.findAll().stream()
+                .map(this::createDto).collect(Collectors.toList());
     }
 
-    public User createUser(String username, String password, String[] roles) {
+    public UserDto createUser(String username, String password, String[] roles) {
         var user = new User(
                 username,
                 passwordEncoder.encode(password),
                 roleRepository.findAllByAuthorityIn(roles));
-        return repository.save(user);
+        var newUser = repository.save(user);
+        return createDto(newUser);
     }
 
-    public User updateUser(Long id, UserCreateDto dto) {
-        return repository.findById(id)
-                        .map(user -> {
-                            user.setUsername(dto.getUsername());
-                            user.setAuthorities(roleRepository.findAllByAuthorityIn(dto.getRoles()));
-                            return repository.save(user);
-                        })
-                        .orElseGet(() -> {
-                            return repository.save(new User(
-                                    dto.getUsername(),
-                                    roleRepository.findAllByAuthorityIn(dto.getRoles()))
-                            );
-                        });
+    public UserDto updateUser(Long id, UserCreateDto dto) {
+        var updatedUser = repository.findById(id)
+                .map(user -> {
+                    user.setUsername(dto.getUsername());
+                    user.setAuthorities(roleRepository.findAllByAuthorityIn(dto.getRoles()));
+                    return repository.save(user);
+                })
+                .orElseGet(() -> {
+                    return repository.save(new User(
+                            dto.getUsername(),
+                            roleRepository.findAllByAuthorityIn(dto.getRoles()))
+                    );
+                });
+        return createDto(updatedUser);
     }
 
     public void deleteUser(Long id) {
@@ -64,5 +70,14 @@ public class UserService {
                 .orElseThrow(() -> {
                     throw new UsernameNotFoundException("User not found");
                 });
+    }
+
+    private UserDto createDto(User user) {
+        return new UserDto(
+                user.getId(),
+                user.getUsername(),
+                user.getAuthorities()
+                        .stream().map(role -> role.getAuthority())
+                        .toArray(String[]::new));
     }
 }
