@@ -1,6 +1,6 @@
 package com.switchkit.switchkit_test.authorization;
 
-import com.switchkit.switchkit_test.jwt.JwtTokenProvider;
+import com.switchkit.switchkit_test.security.jwt.JwtTokenProvider;
 import com.switchkit.switchkit_test.users.UserService;
 import com.switchkit.switchkit_test.users.models.User;
 import lombok.RequiredArgsConstructor;

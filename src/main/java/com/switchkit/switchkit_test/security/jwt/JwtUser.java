@@ -1,4 +1,4 @@
-package com.switchkit.switchkit_test.jwt;
+package com.switchkit.switchkit_test.security.jwt;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

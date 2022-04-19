@@ -1,4 +1,4 @@
-package com.switchkit.switchkit_test.jwt;
+package com.switchkit.switchkit_test.security.jwt;
 
 import com.switchkit.switchkit_test.users.models.Role;
 import io.jsonwebtoken.*;

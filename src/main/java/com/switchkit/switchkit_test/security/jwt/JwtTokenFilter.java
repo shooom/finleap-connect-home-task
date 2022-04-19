@@ -1,4 +1,4 @@
-package com.switchkit.switchkit_test.jwt;
+package com.switchkit.switchkit_test.security.jwt;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +10,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-
 
 public class JwtTokenFilter extends GenericFilterBean {
     private JwtTokenProvider provider;

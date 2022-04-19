@@ -2,7 +2,7 @@ package com.switchkit.switchkit_test.incidentReports;
 
 import com.switchkit.switchkit_test.incidentReports.dto.ReportDto;
 import com.switchkit.switchkit_test.incidentReports.dto.ReportUpdateDto;
-import com.switchkit.switchkit_test.jwt.JwtUser;
+import com.switchkit.switchkit_test.security.jwt.JwtUser;
 import com.switchkit.switchkit_test.users.UserService;
 import com.switchkit.switchkit_test.users.models.User;
 import lombok.AllArgsConstructor;
